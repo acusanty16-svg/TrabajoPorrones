@@ -1,0 +1,22 @@
+:root {
+  --primary: rgb(15, 25, 45);
+  --secondary: rgb(30, 58, 102);
+  --accent: rgb(100, 149, 237);
+  --background: rgb(20, 30, 50);
+  --text: rgb(45, 55, 70);
+  --text-light: rgb(220, 230, 240);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Josefin Sans', sans-serif;
+  line-height: 1.6;
+  background-color: var(--background);
+  color: var(--text);
+  padding-top: 60px;
+}
