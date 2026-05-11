@@ -60,28 +60,27 @@ function Body() {
                 <td className="cell-amarillo">Cerrar</td>
               </tr>
             </tbody>
-          </table>
+</table>
         </div>
-          <div className="color-legend-container">
-            <div className="color-legend">
-          <span className="legend-item">
-            <span className="legend-color cell-rojo"></span>
-            9am-5pm
-          </span>
-          <span className="legend-item">
-            <span className="legend-color cell-verde"></span>
-            12:30-4:30; 8:30pm-...
-          </span>
-          <span className="legend-item">
-            <span className="legend-color cell-amarillo"></span>
-            6:00pm-...
-          </span>
-        </div>
+        <div className="color-legend-container">
+          <div className="color-legend">
+            <span className="legend-item">
+              <span className="legend-color cell-rojo"></span>
+              9am-5pm
+            </span>
+            <span className="legend-item">
+              <span className="legend-color cell-verde"></span>
+              12:30-4:30; 8:30pm-...
+            </span>
+            <span className="legend-item">
+              <span className="legend-color cell-amarillo"></span>
+              6:00pm-...
+            </span>
           </div>
+          <button className="pdf-button" onClick={() => window.print()}>
+            Descargar PDF
+          </button>
         </div>
-        <button className="pdf-button" onClick={() => window.print()}>
-          Descargar PDF
-        </button>
         <div className="inventario" id="inventario">
           <h2>Inventario</h2>
           <p>Proximamente...</p>
