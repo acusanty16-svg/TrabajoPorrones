@@ -178,6 +178,7 @@ tr:hover td {
 
   .body-content {
     padding: 0 0.5rem;
+    flex: 1;
   }
 
   .body h2 {
