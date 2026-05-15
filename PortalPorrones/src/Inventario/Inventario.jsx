@@ -13,9 +13,7 @@ function Inventario() {
   const [form, setForm] = useState({
     nombre: '',
     cantidad: '',
-    precio: '',
-    categoria: '',
-    descripcion: ''
+    categoria: ''
   });
   const [editando, setEditando] = useState(null);
   const [busqueda, setBusqueda] = useState('');
@@ -55,9 +53,9 @@ function Inventario() {
     e.preventDefault();
     try {
       const productoData = {
-        ...form,
+        nombre: form.nombre,
         cantidad: parseInt(form.cantidad),
-        precio: parseFloat(form.precio)
+        categoria: form.categoria
       };
 
       if (editando) {
@@ -67,7 +65,7 @@ function Inventario() {
         await axios.post(API_URL, productoData);
       }
 
-      setForm({ nombre: '', cantidad: '', precio: '', categoria: '', descripcion: '' });
+      setForm({ nombre: '', cantidad: '', categoria: '' });
       fetchProductos();
     } catch (err) {
       console.error('Error al guardar:', err);
@@ -89,9 +87,7 @@ function Inventario() {
     setForm({
       nombre: producto.nombre,
       cantidad: producto.cantidad,
-      precio: producto.precio,
-      categoria: producto.categoria || '',
-      descripcion: producto.descripcion || ''
+      categoria: producto.categoria || ''
     });
     setEditando(producto.id);
   };
@@ -141,29 +137,19 @@ function Inventario() {
           onChange={(e) => setForm({ ...form, cantidad: e.target.value })}
           required
         />
-        <input
-          type="number"
-          step="0.01"
-          placeholder="Precio"
-          value={form.precio}
-          onChange={(e) => setForm({ ...form, precio: e.target.value })}
-          required
-        />
-        <input
-          type="text"
-          placeholder="Categoría"
+        <select
           value={form.categoria}
           onChange={(e) => setForm({ ...form, categoria: e.target.value })}
-        />
-        <input
-          type="text"
-          placeholder="Descripción"
-          value={form.descripcion}
-          onChange={(e) => setForm({ ...form, descripcion: e.target.value })}
-        />
+          required
+        >
+          <option value="">Seleccionar categoría</option>
+          <option value="bebidas">Bebidas</option>
+          <option value="destilados">Destilados</option>
+          <option value="postre">Postre</option>
+        </select>
         <button type="submit">{editando ? 'Actualizar' : 'Agregar'}</button>
         {editando && (
-          <button type="button" onClick={() => { setEditando(null); setForm({ nombre: '', cantidad: '', precio: '', categoria: '', descripcion: '' }); }}>
+          <button type="button" onClick={() => { setEditando(null); setForm({ nombre: '', cantidad: '', categoria: '' }); }}>
             Cancelar
           </button>
         )}
@@ -183,7 +169,6 @@ function Inventario() {
             <tr>
               <th>Nombre</th>
               <th>Cantidad</th>
-              <th>Precio</th>
               <th>Categoría</th>
               <th>Acciones</th>
             </tr>
@@ -193,8 +178,7 @@ function Inventario() {
               <tr key={p.id}>
                 <td>{p.nombre}</td>
                 <td>{p.cantidad}</td>
-                <td>${parseFloat(p.precio).toFixed(2)}</td>
-                <td>{p.categoria || '-'}</td>
+                <td>{p.categoria === 'bebidas' ? 'Bebidas' : p.categoria === 'destilados' ? 'Destilados' : p.categoria === 'postre' ? 'Postre' : '-'}</td>
                 <td>
                   <button onClick={() => handleEdit(p)}>Editar</button>
                   <button onClick={() => handleDelete(p.id)} className="delete-btn">Eliminar</button>
