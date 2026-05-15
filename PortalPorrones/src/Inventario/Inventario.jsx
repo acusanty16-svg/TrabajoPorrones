@@ -17,6 +17,8 @@ function Inventario() {
   });
   const [editando, setEditando] = useState(null);
   const [busqueda, setBusqueda] = useState('');
+  const [mensaje, setMensaje] = useState('');
+  const [tipoMensaje, setTipoMensaje] = useState('');
 
   useEffect(() => {
     if (autenticado) {
@@ -24,13 +26,29 @@ function Inventario() {
     }
   }, [autenticado]);
 
+  useEffect(() => {
+    if (mensaje) {
+      const timer = setTimeout(() => {
+        setMensaje('');
+        setTipoMensaje('');
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [mensaje]);
+
   const fetchProductos = async () => {
     try {
       const res = await axios.get(API_URL);
       setProductos(res.data);
     } catch (err) {
       console.error('Error al cargar productos:', err);
+      showMensaje('Error al cargar productos', 'error');
     }
+  };
+
+  const showMensaje = (texto, tipo) => {
+    setMensaje(texto);
+    setTipoMensaje(tipo);
   };
 
   const handleLogin = (e) => {
@@ -60,15 +78,18 @@ function Inventario() {
 
       if (editando) {
         await axios.put(`${API_URL}/${editando}`, productoData);
+        showMensaje('Producto actualizado correctamente', 'success');
         setEditando(null);
       } else {
         await axios.post(API_URL, productoData);
+        showMensaje('Producto agregado correctamente', 'success');
       }
 
       setForm({ nombre: '', cantidad: '', categoria: '' });
       fetchProductos();
     } catch (err) {
       console.error('Error al guardar:', err);
+      showMensaje('Error al guardar el producto', 'error');
     }
   };
 
@@ -76,9 +97,11 @@ function Inventario() {
     if (confirm('¿Eliminar este producto?')) {
       try {
         await axios.delete(`${API_URL}/${id}`);
+        showMensaje('Producto eliminado correctamente', 'success');
         fetchProductos();
       } catch (err) {
         console.error('Error al eliminar:', err);
+        showMensaje('Error al eliminar el producto', 'error');
       }
     }
   };
@@ -117,6 +140,12 @@ function Inventario() {
 
   return (
     <div className="inventario-container">
+      {mensaje && (
+        <div className={`mensaje-popup ${tipoMensaje}`}>
+          {mensaje}
+        </div>
+      )}
+      
       <div className="inventario-header">
         <h2>Inventario</h2>
         <button onClick={handleLogout} className="logout-btn">Salir</button>
