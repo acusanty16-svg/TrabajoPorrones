@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import './Inventario.css';
 
-const API_URL = 'http://localhost:8080/api/productos';
+const API_URL = 'https://portalporrones-backend-production.up.railway.app/api/productos';
 const PASSWORD = '1010';
 
 function Inventario() {
