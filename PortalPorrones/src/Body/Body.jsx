@@ -1,4 +1,5 @@
 import './Body.css'
+import Inventario from '../Inventario/Inventario.jsx'
 
 function Body() {
   return (
@@ -60,7 +61,7 @@ function Body() {
                 <td className="cell-amarillo">Cerrar</td>
               </tr>
             </tbody>
-</table>
+          </table>
         </div>
         <div className="color-legend-container">
           <div className="color-legend">
@@ -83,7 +84,7 @@ function Body() {
         </div>
         <div className="inventario" id="inventario">
           <h2>Inventario</h2>
-          <p>Proximamente...</p>
+          <Inventario />
         </div>
 
         <div className="reservas" id="reservas">
