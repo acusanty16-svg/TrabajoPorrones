@@ -83,7 +83,6 @@ function Body() {
           </button>
         </div>
         <div className="inventario" id="inventario">
-          <h2>Inventario</h2>
           <Inventario />
         </div>
 
