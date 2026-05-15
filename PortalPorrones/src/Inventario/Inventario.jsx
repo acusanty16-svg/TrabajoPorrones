@@ -3,6 +3,7 @@ import axios from 'axios';
 import './Inventario.css';
 
 const API_URL = 'https://portalporrones-backend-production.up.railway.app/api/productos';
+// Actualizado para conectar con Railway
 const PASSWORD = '1010';
 
 function Inventario() {
