@@ -3,8 +3,12 @@ import axios from 'axios';
 import './Inventario.css';
 
 const API_URL = 'https://portalporrones-backend-production.up.railway.app/api/productos';
+const PASSWORD = '1010';
 
 function Inventario() {
+  const [autenticado, setAutenticado] = useState(false);
+  const [passwordInput, setPasswordInput] = useState('');
+  const [error, setError] = useState('');
   const [productos, setProductos] = useState([]);
   const [form, setForm] = useState({
     nombre: '',
@@ -17,8 +21,10 @@ function Inventario() {
   const [busqueda, setBusqueda] = useState('');
 
   useEffect(() => {
-    fetchProductos();
-  }, []);
+    if (autenticado) {
+      fetchProductos();
+    }
+  }, [autenticado]);
 
   const fetchProductos = async () => {
     try {
@@ -27,6 +33,22 @@ function Inventario() {
     } catch (err) {
       console.error('Error al cargar productos:', err);
     }
+  };
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    if (passwordInput === PASSWORD) {
+      setAutenticado(true);
+      setError('');
+    } else {
+      setError('Contraseña incorrecta');
+    }
+    setPasswordInput('');
+  };
+
+  const handleLogout = () => {
+    setAutenticado(false);
+    setProductos([]);
   };
 
   const handleSubmit = async (e) => {
@@ -79,9 +101,30 @@ function Inventario() {
     (p.categoria && p.categoria.toLowerCase().includes(busqueda.toLowerCase()))
   );
 
+  if (!autenticado) {
+    return (
+      <div className="inventario-container">
+        <h2>Inventario</h2>
+        <form onSubmit={handleLogin} className="login-form">
+          <input
+            type="password"
+            placeholder="Ingrese contraseña"
+            value={passwordInput}
+            onChange={(e) => setPasswordInput(e.target.value)}
+          />
+          <button type="submit">Acceder</button>
+          {error && <p className="error-msg">{error}</p>}
+        </form>
+      </div>
+    );
+  }
+
   return (
     <div className="inventario-container">
-      <h2>Inventario</h2>
+      <div className="inventario-header">
+        <h2>Inventario</h2>
+        <button onClick={handleLogout} className="logout-btn">Salir</button>
+      </div>
 
       <form onSubmit={handleSubmit} className="inventario-form">
         <input
@@ -134,31 +177,33 @@ function Inventario() {
         className="busqueda-input"
       />
 
-      <table className="inventario-table">
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Cantidad</th>
-            <th>Precio</th>
-            <th>Categoría</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {productosFiltrados.map((p) => (
-            <tr key={p.id}>
-              <td>{p.nombre}</td>
-              <td>{p.cantidad}</td>
-              <td>${parseFloat(p.precio).toFixed(2)}</td>
-              <td>{p.categoria || '-'}</td>
-              <td>
-                <button onClick={() => handleEdit(p)}>Editar</button>
-                <button onClick={() => handleDelete(p.id)} className="delete-btn">Eliminar</button>
-              </td>
+      <div className="table-container">
+        <table className="inventario-table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Cantidad</th>
+              <th>Precio</th>
+              <th>Categoría</th>
+              <th>Acciones</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {productosFiltrados.map((p) => (
+              <tr key={p.id}>
+                <td>{p.nombre}</td>
+                <td>{p.cantidad}</td>
+                <td>${parseFloat(p.precio).toFixed(2)}</td>
+                <td>{p.categoria || '-'}</td>
+                <td>
+                  <button onClick={() => handleEdit(p)}>Editar</button>
+                  <button onClick={() => handleDelete(p.id)} className="delete-btn">Eliminar</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       {productosFiltrados.length === 0 && <p className="no-data">No hay productos</p>}
     </div>
