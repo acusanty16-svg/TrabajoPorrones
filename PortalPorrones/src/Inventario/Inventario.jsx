@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import './Inventario.css';
 
-const API_URL = 'https://portalporrones-backend-production.up.railway.app/api/productos';
+const API_URL = 'http://localhost:8080/api/productos';
 const PASSWORD = '1010';
 
 function Inventario() {
@@ -49,6 +49,65 @@ function Inventario() {
   const showMensaje = (texto, tipo) => {
     setMensaje(texto);
     setTipoMensaje(tipo);
+  };
+
+  const exportarCSV = () => {
+    const fecha = new Date().toISOString().split('T')[0];
+    let htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Inventario ${fecha}</title>
+<style>
+  body { font-family: Arial, sans-serif; }
+  table { border-collapse: collapse; width: 100%; }
+  th, td { border: 1px solid #333; padding: 12px; text-align: left; }
+  th { background-color: #343a40; color: white; }
+  .rojo { background-color: #ffcccc; color: #cc0000; font-weight: bold; }
+  .stock-bajo { color: red; }
+</style>
+</head>
+<body>
+<h2>Inventario - ${fecha}</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Nombre</th>
+      <th>Cantidad</th>
+      <th>Categoría</th>
+      <th>Estado</th>
+    </tr>
+  </thead>
+  <tbody>
+`;
+
+    productos.forEach(p => {
+      const categoria = p.categoria === 'bebidas' ? 'Bebidas' : p.categoria === 'destilados' ? 'Destilados' : p.categoria === 'postre' ? 'Postre' : '-';
+      const esStockBajo = p.cantidad < 3;
+      const estado = esStockBajo ? '⚠️ STOCK BAJO' : '✓ Normal';
+      const claseRojo = esStockBajo ? 'rojo' : '';
+      
+      htmlContent += `    <tr class="${claseRojo}">
+      <td>${p.nombre}</td>
+      <td class="${esStockBajo ? 'stock-bajo' : ''}">${p.cantidad}</td>
+      <td>${categoria}</td>
+      <td>${estado}</td>
+    </tr>\n`;
+    });
+
+    htmlContent += `  </tbody>
+</table>
+<p>Total de productos: ${productos.length}</p>
+</body>
+</html>`;
+
+    const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `inventario_${fecha}.html`;
+    link.click();
+    showMensaje('Archivo exportado correctamente', 'success');
   };
 
   const handleLogin = (e) => {
@@ -184,13 +243,16 @@ function Inventario() {
         )}
       </form>
 
-      <input
-        type="text"
-        placeholder="Buscar productos..."
-        value={busqueda}
-        onChange={(e) => setBusqueda(e.target.value)}
-        className="busqueda-input"
-      />
+      <div className="busqueda-container">
+        <input
+          type="text"
+          placeholder="Buscar productos..."
+          value={busqueda}
+          onChange={(e) => setBusqueda(e.target.value)}
+          className="busqueda-input"
+        />
+        <button onClick={exportarCSV} className="csv-btn">Exportar</button>
+      </div>
 
       <div className="table-container">
         <table className="inventario-table">

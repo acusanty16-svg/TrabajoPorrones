@@ -105,12 +105,30 @@
 }
 
 .busqueda-input {
-  width: 100%;
+  flex: 1;
   padding: 10px;
-  margin-bottom: 15px;
   border: 1px solid #ddd;
   border-radius: 4px;
-  box-sizing: border-box;
+}
+
+.busqueda-container {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.csv-btn {
+  padding: 10px 20px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.csv-btn:hover {
+  background: #0056b3;
 }
 
 .table-container {
