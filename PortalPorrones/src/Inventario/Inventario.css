@@ -155,9 +155,6 @@
   color: white;
 }
 
-.inventario-table tr:hover {
-  background: #f8f9fa;
-}
 
 .inventario-table button {
   padding: 5px 10px;

@@ -45,9 +45,6 @@ td {
   font-weight: 600;
 }
 
-tr:hover td {
-  background: rgba(100, 149, 237, 0.1);
-}
 
 .cards {
   display: flex;
@@ -122,23 +119,6 @@ tr:hover td {
   color: var(--text-light);
 }
 
-.reservas {
-  margin-top: 2rem;
-  padding: 2rem;
-  background: var(--secondary);
-  border-radius: 8px;
-  text-align: center;
-}
-
-.reservas h2 {
-  color: var(--accent);
-  margin-bottom: 1rem;
-}
-
-.reservas p {
-  color: var(--text-light);
-}
-
 .cell-rojo {
   background-color: rgb(180, 50, 50);
   color: white;
@@ -195,20 +175,15 @@ tr:hover td {
     font-size: 0.7rem;
   }
 
-  .inventario,
-  .reservas {
+  .inventario {
     padding: 1.5rem 1rem;
     margin-top: 2rem;
   }
 
-  .inventario h2,
-  .reservas h2 {
-    font-size: 1.2rem;
-  }
 }
 
 @media print {
-  .header, .hero, .inventario, .reservas, .footer {
+  .header, .hero, .inventario, .footer {
     display: none;
   }
 

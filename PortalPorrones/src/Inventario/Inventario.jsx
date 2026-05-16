@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import './Inventario.css';
 
 const API_URL = 'https://portalporrones-backend-production.up.railway.app/api/productos';
@@ -18,6 +20,7 @@ function Inventario() {
   });
   const [editando, setEditando] = useState(null);
   const [busqueda, setBusqueda] = useState('');
+  const [filtroCategoria, setFiltroCategoria] = useState('');
   const [mensaje, setMensaje] = useState('');
   const [tipoMensaje, setTipoMensaje] = useState('');
 
@@ -52,63 +55,53 @@ function Inventario() {
     setTipoMensaje(tipo);
   };
 
-  const exportarCSV = () => {
+  const exportarPDF = () => {
     const fecha = new Date().toISOString().split('T')[0];
-    let htmlContent = `
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Inventario ${fecha}</title>
-<style>
-  body { font-family: Arial, sans-serif; }
-  table { border-collapse: collapse; width: 100%; }
-  th, td { border: 1px solid #333; padding: 12px; text-align: left; }
-  th { background-color: #343a40; color: white; }
-  .rojo { background-color: #ffcccc; color: #cc0000; font-weight: bold; }
-  .stock-bajo { color: red; }
-</style>
-</head>
-<body>
-<h2>Inventario - ${fecha}</h2>
-<table>
-  <thead>
-    <tr>
-      <th>Nombre</th>
-      <th>Cantidad</th>
-      <th>Categoría</th>
-      <th>Estado</th>
-    </tr>
-  </thead>
-  <tbody>
-`;
+    const doc = new jsPDF();
 
-    productos.forEach(p => {
+    const productosAExportar = filtroCategoria 
+      ? productos.filter(p => p.categoria === filtroCategoria)
+      : productos;
+
+    const titulo = filtroCategoria 
+      ? `${filtroCategoria === 'bebidas' ? 'Bebidas' : filtroCategoria === 'destilados' ? 'Destilados' : 'Postres'} - ${fecha}`
+      : `Inventario - ${fecha}`;
+
+    doc.setFontSize(18);
+    doc.text(titulo, 14, 20);
+
+    const tableData = productosAExportar.map(p => {
       const categoria = p.categoria === 'bebidas' ? 'Bebidas' : p.categoria === 'destilados' ? 'Destilados' : p.categoria === 'postre' ? 'Postre' : '-';
-      const esStockBajo = p.cantidad < 3;
-      const estado = esStockBajo ? '⚠️ STOCK BAJO' : '✓ Normal';
-      const claseRojo = esStockBajo ? 'rojo' : '';
-      
-      htmlContent += `    <tr class="${claseRojo}">
-      <td>${p.nombre}</td>
-      <td class="${esStockBajo ? 'stock-bajo' : ''}">${p.cantidad}</td>
-      <td>${categoria}</td>
-      <td>${estado}</td>
-    </tr>\n`;
+      const esStockBajo = p.cantidad <= 2;
+      const estado = esStockBajo ? 'Stock bajo' : 'Normal';
+      return [p.nombre, p.cantidad.toString(), categoria, estado];
     });
 
-    htmlContent += `  </tbody>
-</table>
-<p>Total de productos: ${productos.length}</p>
-</body>
-</html>`;
+    autoTable(doc, {
+      head: [['Nombre', 'Cantidad', 'Categoría', 'Estado']],
+      body: tableData,
+      startY: 30,
+      headStyles: { fillColor: [52, 58, 64] },
+      didParseCell: function(data) {
+        if (data.column.index === 3 && data.cell.raw.toLowerCase().includes('stock bajo')) {
+          data.cell.styles.textColor = [204, 0, 0];
+          data.cell.styles.fontStyle = 'bold';
+        }
+        if (data.column.index === 1 && parseInt(data.cell.raw) < 3) {
+          data.cell.styles.textColor = [204, 0, 0];
+        }
+      }
+    });
 
-    const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8;' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `inventario_${fecha}.html`;
-    link.click();
-    showMensaje('Archivo exportado correctamente', 'success');
+    const finalY = doc.lastAutoTable.finalY + 10;
+    doc.setFontSize(10);
+    doc.text(`Total de productos: ${productosAExportar.length}`, 14, finalY);
+
+    const nombreArchivo = filtroCategoria 
+      ? `${filtroCategoria}_${fecha}.pdf`
+      : `inventario_${fecha}.pdf`;
+    doc.save(nombreArchivo);
+    showMensaje('PDF exportado correctamente', 'success');
   };
 
   const handleLogin = (e) => {
@@ -175,10 +168,12 @@ function Inventario() {
     setEditando(producto.id);
   };
 
-  const productosFiltrados = productos.filter(p =>
-    p.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
-    (p.categoria && p.categoria.toLowerCase().includes(busqueda.toLowerCase()))
-  );
+  const productosFiltrados = productos.filter(p => {
+    const coincideBusqueda = p.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
+      (p.categoria && p.categoria.toLowerCase().includes(busqueda.toLowerCase()));
+    const coincideCategoria = !filtroCategoria || p.categoria === filtroCategoria;
+    return coincideBusqueda && coincideCategoria;
+  });
 
   if (!autenticado) {
     return (
@@ -252,7 +247,19 @@ function Inventario() {
           onChange={(e) => setBusqueda(e.target.value)}
           className="busqueda-input"
         />
-        <button onClick={exportarCSV} className="csv-btn">Exportar</button>
+        <select
+          value={filtroCategoria}
+          onChange={(e) => setFiltroCategoria(e.target.value)}
+          className="filtro-categoria"
+        >
+          <option value="">Todas las categorías</option>
+          <option value="bebidas">Bebidas</option>
+          <option value="destilados">Destilados</option>
+          <option value="postre">Postre</option>
+        </select>
+        <button onClick={exportarPDF} className="csv-btn">
+          {filtroCategoria ? `Exportar ${filtroCategoria === 'bebidas' ? 'Bebidas' : filtroCategoria === 'destilados' ? 'Destilados' : 'Postres'} PDF` : 'Exportar PDF'}
+        </button>
       </div>
 
       <div className="table-container">

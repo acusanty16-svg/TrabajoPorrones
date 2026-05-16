@@ -85,11 +85,6 @@ function Body() {
         <div className="inventario" id="inventario">
           <Inventario />
         </div>
-
-        <div className="reservas" id="reservas">
-          <h2>Reservas</h2>
-          <p>Proximamente...</p>
-        </div>
       </div>
     </main>
   )
