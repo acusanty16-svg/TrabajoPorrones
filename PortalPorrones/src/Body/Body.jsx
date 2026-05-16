@@ -48,7 +48,7 @@ function generarPDFHorarios() {
     t.domingo
   ]);
 
-  doc.autoTable({
+  autoTable(doc, {
     head: [['Trabajador', 'Lunes - Martes', 'Jueves - Viernes', 'Sábado', 'Domingo']],
     body: tableData,
     startY: 55,
