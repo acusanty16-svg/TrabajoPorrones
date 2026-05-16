@@ -111,6 +111,13 @@
   border-radius: 4px;
 }
 
+.filtro-categoria {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: white;
+}
+
 .busqueda-container {
   display: flex;
   gap: 10px;
@@ -209,4 +216,20 @@
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-10px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 600px) {
+  .busqueda-container {
+    flex-direction: column;
+  }
+
+  .busqueda-input,
+  .filtro-categoria {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .csv-btn {
+    width: 100%;
+  }
 }
