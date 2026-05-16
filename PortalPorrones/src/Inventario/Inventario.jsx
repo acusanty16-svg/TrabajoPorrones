@@ -56,7 +56,15 @@ function Inventario() {
   };
 
   const exportarPDF = () => {
-    const fecha = new Date().toISOString().split('T')[0];
+    const fecha = new Date().toLocaleDateString('es-ES', { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    });
+    const hora = new Date().toLocaleTimeString('es-ES', { 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    });
     const doc = new jsPDF();
 
     const productosAExportar = filtroCategoria 
@@ -64,11 +72,44 @@ function Inventario() {
       : productos;
 
     const titulo = filtroCategoria 
-      ? `${filtroCategoria === 'bebidas' ? 'Bebidas' : filtroCategoria === 'destilados' ? 'Destilados' : 'Postres'} - ${fecha}`
-      : `Inventario - ${fecha}`;
+      ? `${filtroCategoria === 'bebidas' ? 'Bebidas' : filtroCategoria === 'destilados' ? 'Destilados' : 'Postres'} - Inventario`
+      : 'Inventario General';
 
-    doc.setFontSize(18);
-    doc.text(titulo, 14, 20);
+    const totalStock = productosAExportar.reduce((acc, p) => acc + p.cantidad, 0);
+    const stockBajo = productosAExportar.filter(p => p.cantidad <= 2).length;
+
+    doc.setFillColor(52, 58, 64);
+    doc.rect(0, 0, 210, 40, 'F');
+    
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(24);
+    doc.setFont('helvetica', 'bold');
+    doc.text('PORTAL PORRONES', 14, 20);
+    
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Inventario y Gestión de Productos', 14, 28);
+    
+    doc.setFontSize(10);
+    doc.text(`Fecha de emisión: ${fecha}`, 140, 20);
+    doc.text(`Hora: ${hora}`, 140, 26);
+
+    doc.setTextColor(52, 58, 64);
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.text(titulo, 14, 50);
+
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Total de productos: ${productosAExportar.length}`, 14, 58);
+    doc.text(`Cantidad total en stock: ${totalStock}`, 14, 64);
+    if (stockBajo > 0) {
+      doc.setTextColor(204, 0, 0);
+      doc.setFont('helvetica', 'bold');
+      doc.text(`Productos con stock bajo: ${stockBajo}`, 14, 70);
+      doc.setTextColor(52, 58, 64);
+      doc.setFont('helvetica', 'normal');
+    }
 
     const tableData = productosAExportar.map(p => {
       const categoria = p.categoria === 'bebidas' ? 'Bebidas' : p.categoria === 'destilados' ? 'Destilados' : p.categoria === 'postre' ? 'Postre' : '-';
@@ -80,8 +121,19 @@ function Inventario() {
     autoTable(doc, {
       head: [['Nombre', 'Cantidad', 'Categoría', 'Estado']],
       body: tableData,
-      startY: 30,
-      headStyles: { fillColor: [52, 58, 64] },
+      startY: 78,
+      headStyles: { 
+        fillColor: [52, 58, 64],
+        textColor: [255, 255, 255],
+        fontStyle: 'bold',
+        fontSize: 11
+      },
+      bodyStyles: {
+        fontSize: 10
+      },
+      alternateRowStyles: {
+        fillColor: [245, 245, 245]
+      },
       didParseCell: function(data) {
         if (data.column.index === 3 && data.cell.raw.toLowerCase().includes('stock bajo')) {
           data.cell.styles.textColor = [204, 0, 0];
@@ -89,13 +141,20 @@ function Inventario() {
         }
         if (data.column.index === 1 && parseInt(data.cell.raw) < 3) {
           data.cell.styles.textColor = [204, 0, 0];
+          data.cell.styles.fontStyle = 'bold';
         }
       }
     });
 
-    const finalY = doc.lastAutoTable.finalY + 10;
-    doc.setFontSize(10);
-    doc.text(`Total de productos: ${productosAExportar.length}`, 14, finalY);
+    const finalY = doc.lastAutoTable.finalY + 15;
+    doc.setDrawColor(52, 58, 64);
+    doc.setLineWidth(0.5);
+    doc.line(14, finalY, 196, finalY);
+    
+    doc.setFontSize(8);
+    doc.setTextColor(128, 128, 128);
+    doc.text('Portal Porrones - Sistema de Gestión de Inventario', 14, finalY + 8);
+    doc.text(`Página 1`, 185, finalY + 8);
 
     const nombreArchivo = filtroCategoria 
       ? `${filtroCategoria}_${fecha}.pdf`
