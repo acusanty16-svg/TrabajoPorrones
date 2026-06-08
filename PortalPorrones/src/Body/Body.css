@@ -1,262 +1,367 @@
 .body {
-  padding: 3rem 2rem;
-  background-color: var(--background);
+  padding: 2rem;
 }
 
 .body-content {
-  max-width: 1200px;
+  max-width: 900px;
   margin: 0 auto;
 }
 
 .body h2 {
   text-align: center;
-  margin-bottom: 2rem;
-  color: var(--text-light);
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  color: var(--text);
 }
 
+/* ----- Login ----- */
+.schedule-login {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.password-input {
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.password-input:focus {
+  border-color: var(--accent);
+}
+
+.error-msg {
+  color: var(--danger);
+  font-size: 0.85rem;
+  margin: 0;
+  width: 100%;
+  text-align: center;
+}
+
+/* ----- Actions ----- */
+.schedule-actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  padding: 0.6rem 1.25rem;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-weight: 500;
+}
+
+.action-btn:hover {
+  background: var(--accent-hover);
+}
+
+.action-btn.logout-btn {
+  background: var(--danger);
+}
+
+.action-btn.logout-btn:hover {
+  background: #ff5252;
+}
+
+.reset-btn {
+  background: var(--text-muted);
+}
+
+.reset-btn:hover {
+  background: #9999bb;
+}
+
+/* ----- Table ----- */
 .schedule-table {
   overflow-x: auto;
-  max-width: 800px;
-  margin: 0 auto 1rem;
+  margin-bottom: 1.5rem;
 }
 
-table {
+.schedule-table table {
   width: 100%;
   border-collapse: collapse;
-  background: var(--secondary);
-  border-radius: 8px;
+  background: var(--surface);
+  border-radius: var(--radius);
+  overflow: hidden;
 }
 
-th, td {
+.schedule-table th {
+  background: var(--surface-hover);
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 0.8rem;
+  padding: 0.75rem 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--border);
+}
+
+.schedule-table td {
   padding: 0.5rem;
   font-size: 0.85rem;
   text-align: center;
-  border: 1px solid rgba(100, 149, 237, 0.2);
-}
-
-th {
-  background: var(--primary);
-  color: var(--accent);
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
   font-weight: 600;
 }
 
-td {
-  color: var(--text-light);
+.schedule-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* ----- Cell colors ----- */
+.cell-rojo   { background: rgb(200, 50, 50);   color: #fff; }
+.cell-verde  { background: rgb(50, 160, 80);   color: #fff; }
+.cell-purpura{ background: rgb(130, 50, 200);  color: #fff; }
+.cell-cian   { background: rgb(0, 170, 170);   color: #fff; }
+.cell-azul   { background: rgb(40, 100, 200);  color: #fff; }
+
+/* ----- Editable inputs ----- */
+.nombre-input {
+  background: transparent;
+  border: none;
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
   font-weight: 600;
-}
-
-
-.cards {
-  display: flex;
-  gap: 2rem;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin-bottom: 3rem;
-}
-
-.card {
-  background: var(--secondary);
-  padding: 2rem;
-  border-radius: 8px;
-  width: 300px;
   text-align: center;
-  border: 1px solid rgba(100, 149, 237, 0.2);
+  width: 100%;
+  outline: none;
+  padding: 0.25rem 0;
 }
 
-.card h3 {
-  color: var(--accent);
-  margin-bottom: 1rem;
+.nombre-input:focus {
+  border-bottom: 1px solid var(--accent);
 }
 
-.card p {
-  color: var(--text-light);
+.turno-select {
+  background: transparent;
+  border: none;
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: 600;
+  text-align: center;
+  width: 100%;
+  cursor: pointer;
+  outline: none;
 }
 
+.turno-select option {
+  background: #1a1a2e;
+  color: #fff;
+}
+
+.delete-btn {
+  background: transparent;
+  border: 1px solid rgba(255, 80, 80, 0.4);
+  color: var(--danger);
+  border-radius: 6px;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.8rem;
+  transition: background 0.2s;
+}
+
+.delete-btn:hover {
+  background: rgba(255, 80, 80, 0.15);
+}
+
+/* ----- Legend ----- */
 .color-legend-container {
-  background: var(--secondary);
-  border-radius: 8px;
-  padding: 1.5rem;
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 1.25rem;
   margin-bottom: 1.5rem;
 }
 
 .color-legend {
   display: flex;
   justify-content: center;
-  gap: 2rem;
+  gap: 1.5rem;
   flex-wrap: wrap;
 }
 
 .legend-item {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  color: var(--text-light);
-  font-size: 1.1rem;
-  font-weight: 600;
+  gap: 0.5rem;
+  color: var(--text);
+  font-size: 0.85rem;
+  font-weight: 500;
 }
 
 .legend-color {
   display: inline-block;
-  width: 20px;
-  height: 20px;
+  width: 14px;
+  height: 14px;
   border-radius: 4px;
-}
-
-.inventario {
-  margin-top: 4rem;
-  padding: 2rem;
-  background: var(--secondary);
-  border-radius: 8px;
-  text-align: center;
-}
-
-.inventario h2 {
-  color: var(--accent);
-  margin-bottom: 1rem;
-}
-
-.inventario p {
-  color: var(--text-light);
-}
-
-.cell-rojo {
-  background-color: rgb(180, 50, 50);
-  color: white;
-}
-
-.cell-verde {
-  background-color: rgb(50, 150, 80);
-  color: white;
-}
-
-.cell-amarillo {
-  background-color: rgb(200, 120, 40);
-  color: white;
 }
 
 .pdf-button {
   display: block;
-  margin: 1.5rem auto 0;
-  padding: 0.75rem 2rem;
+  margin: 1rem auto 0;
+  padding: 0.6rem 1.5rem;
   background: var(--accent);
-  color: var(--primary);
+  color: #fff;
   border: none;
-  border-radius: 4px;
-  font-family: 'Josefin Sans', sans-serif;
-  font-size: 1rem;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.9rem;
   cursor: pointer;
+  transition: background 0.2s;
+  font-weight: 500;
 }
 
 .pdf-button:hover {
-  opacity: 0.9;
+  background: var(--accent-hover);
 }
 
+/* ----- Mobile card layout ----- */
 @media (max-width: 768px) {
   .body {
-    padding: 2rem 0.5rem;
-  }
-
-  .body-content {
-    padding: 0 0.5rem;
-    flex: 1;
+    padding: 1rem 0.75rem;
   }
 
   .body h2 {
-    font-size: 1.3rem;
-    margin-bottom: 1.5rem;
-  }
-
-  th, td {
-    padding: 0.4rem;
-    font-size: 0.75rem;
-  }
-
-  th {
-    font-size: 0.7rem;
-  }
-
-  .inventario {
-    padding: 1.5rem 1rem;
-    margin-top: 2rem;
-  }
-
-}
-
-@media print {
-  .header, .hero, .inventario, .footer {
-    display: none;
-  }
-
-  .body {
-    background: white;
-    padding: 1rem;
-  }
-
-  .body-content {
-    max-width: 100%;
-  }
-
-  .body h2 {
-    color: #333;
-  }
-
-  .schedule-table {
+    font-size: 1.2rem;
     margin-bottom: 1rem;
   }
 
-  table {
-    background: white;
-    color: black;
+  .schedule-table table,
+  .schedule-table thead,
+  .schedule-table tbody,
+  .schedule-table th,
+  .schedule-table td,
+  .schedule-table tr {
+    display: block;
   }
 
-  th {
-    background: #333;
-    color: white;
+  .schedule-table thead {
+    display: none;
   }
 
-  td {
-    color: black;
+  .schedule-table tr {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
+    border: 1px solid var(--border);
   }
 
-  .cell-rojo {
-    background: rgb(180, 50, 50) !important;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
+  .schedule-table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.4rem 0;
+    font-size: 0.85rem;
+    border-bottom: none;
+    border-bottom: 1px solid var(--border);
   }
 
-  .cell-verde {
-    background: rgb(50, 150, 80) !important;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
+  .schedule-table td:last-child {
+    border-bottom: none;
   }
 
-  .cell-amarillo {
-    background: rgb(200, 120, 40) !important;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
+  .schedule-table td::before {
+    content: attr(data-label);
+    font-weight: 500;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
   }
 
-  .color-legend-container {
-    background: white;
-    padding: 1rem 0;
+  .schedule-table td:first-child::before {
+    content: 'Trabajador';
+  }
+
+  .schedule-table td:nth-child(2)::before { content: 'Lunes'; }
+  .schedule-table td:nth-child(3)::before { content: 'Martes'; }
+  .schedule-table td:nth-child(4)::before { content: 'Jueves'; }
+  .schedule-table td:nth-child(5)::before { content: 'Viernes'; }
+  .schedule-table td:nth-child(6)::before { content: 'Sáb y Dom'; }
+
+  .schedule-table td:not(:first-child) {
+    justify-content: space-between;
+  }
+
+  .nombre-input {
+    text-align: right;
+  }
+
+  .turno-select {
+    text-align: right;
+    width: auto;
   }
 
   .color-legend {
-    display: flex;
-    gap: 2rem;
+    gap: 0.75rem;
   }
 
   .legend-item {
-    color: #333;
+    font-size: 0.8rem;
+  }
+}
+
+/* ----- Print ----- */
+@media print {
+  .header, .hero, .footer, .schedule-login, .schedule-actions, .pdf-button {
+    display: none !important;
   }
 
-  .legend-color {
-    width: 20px;
-    height: 20px;
-    border-radius: 4px;
+  .body {
+    padding: 0.5rem;
   }
 
-  .pdf-button {
-    display: none;
+  .body h2 {
+    color: #000;
+  }
+
+  .schedule-table table {
+    background: #fff;
+  }
+
+  .schedule-table th {
+    background: #333;
+    color: #fff;
+  }
+
+  .schedule-table td {
+    color: #000;
+    border-color: #ccc;
+  }
+
+  .cell-rojo    { background: rgb(200, 50, 50) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .cell-verde   { background: rgb(50, 160, 80) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .cell-purpura { background: rgb(130, 50, 200) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .cell-cian    { background: rgb(0, 170, 170) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .cell-azul    { background: rgb(40, 100, 200) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+  .color-legend-container {
+    background: #fff;
+  }
+
+  .legend-item {
+    color: #000;
   }
 }

@@ -1,17 +1,16 @@
-import './App.css'
-import Header from './Header/Header.jsx'
-import Hero from './Hero/Hero.jsx'
-import Body from './Body/Body.jsx'
-import Footer from './Footer/Footer.jsx'
+import { Routes, Route } from 'react-router-dom'
+import Layout from './Layout.jsx'
+import HomePage from './pages/HomePage.jsx'
+import InventarioPage from './pages/InventarioPage.jsx'
 
 function App() {
   return (
-    <>
-      <Header />
-      <Hero />
-      <Body />
-      <Footer />
-    </>
+    <Routes>
+      <Route element={<Layout />}>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/inventario" element={<InventarioPage />} />
+      </Route>
+    </Routes>
   )
 }
 

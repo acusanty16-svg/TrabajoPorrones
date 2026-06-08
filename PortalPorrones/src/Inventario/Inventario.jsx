@@ -23,6 +23,7 @@ function Inventario() {
   const [filtroCategoria, setFiltroCategoria] = useState('');
   const [mensaje, setMensaje] = useState('');
   const [tipoMensaje, setTipoMensaje] = useState('');
+  const [cargando, setCargando] = useState(false);
 
   useEffect(() => {
     if (autenticado) {
@@ -41,12 +42,15 @@ function Inventario() {
   }, [mensaje]);
 
   const fetchProductos = async () => {
+    setCargando(true);
     try {
       const res = await axios.get(API_URL);
       setProductos(res.data);
     } catch (err) {
       console.error('Error al cargar productos:', err);
       showMensaje('Error al cargar productos', 'error');
+    } finally {
+      setCargando(false);
     }
   };
 
@@ -179,8 +183,33 @@ function Inventario() {
     setProductos([]);
   };
 
+  const resetearCategoria = async () => {
+    const cat = filtroCategoria;
+    if (!cat) return;
+    const nombreCat = cat === 'bebidas' ? 'Bebidas' : cat === 'destilados' ? 'Destilados' : 'Postres';
+    if (!confirm(`¿Resetear todos los ${nombreCat} a 0?`)) return;
+    const items = productos.filter(p => p.categoria === cat);
+    if (items.length === 0) {
+      showMensaje(`No hay ${nombreCat} para resetear`, 'error');
+      return;
+    }
+    setCargando(true);
+    try {
+      await Promise.all(items.map(p =>
+        axios.put(`${API_URL}/${p.id}`, { nombre: p.nombre, cantidad: 0, categoria: p.categoria })
+      ));
+      showMensaje(`${items.length} ${nombreCat} reseteado(s) a 0`, 'success');
+      fetchProductos();
+    } catch (err) {
+      console.error('Error al resetear:', err);
+      showMensaje('Error al resetear', 'error');
+      setCargando(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setCargando(true);
     try {
       const productoData = {
         nombre: form.nombre,
@@ -202,6 +231,7 @@ function Inventario() {
     } catch (err) {
       console.error('Error al guardar:', err);
       showMensaje('Error al guardar el producto', 'error');
+      setCargando(false);
     }
   };
 
@@ -278,6 +308,7 @@ function Inventario() {
           placeholder="Cantidad"
           value={form.cantidad}
           onChange={(e) => setForm({ ...form, cantidad: e.target.value })}
+          min="0"
           required
         />
         <select
@@ -316,38 +347,47 @@ function Inventario() {
           <option value="destilados">Destilados</option>
           <option value="postre">Postre</option>
         </select>
+        {filtroCategoria && (
+          <button onClick={resetearCategoria} className="reset-cat-btn">
+            Reset {filtroCategoria === 'bebidas' ? 'Bebidas' : filtroCategoria === 'destilados' ? 'Destilados' : 'Postres'}
+          </button>
+        )}
         <button onClick={exportarPDF} className="csv-btn">
           {filtroCategoria ? `Exportar ${filtroCategoria === 'bebidas' ? 'Bebidas' : filtroCategoria === 'destilados' ? 'Destilados' : 'Postres'} PDF` : 'Exportar PDF'}
         </button>
       </div>
 
-      <div className="table-container">
-        <table className="inventario-table">
-          <thead>
-            <tr>
-              <th>Nombre</th>
-              <th>Cantidad</th>
-              <th>Categoría</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {productosFiltrados.map((p) => (
-              <tr key={p.id}>
-                <td>{p.nombre}</td>
-                <td>{p.cantidad}</td>
-                <td>{p.categoria === 'bebidas' ? 'Bebidas' : p.categoria === 'destilados' ? 'Destilados' : p.categoria === 'postre' ? 'Postre' : '-'}</td>
-                <td>
-                  <button onClick={() => handleEdit(p)}>Editar</button>
-                  <button onClick={() => handleDelete(p.id)} className="delete-btn">Eliminar</button>
-                </td>
+      {cargando ? (
+        <div className="spinner" role="status" aria-label="Cargando productos"></div>
+      ) : (
+        <div className="table-container">
+          <table className="inventario-table">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Cantidad</th>
+                <th>Categoría</th>
+                <th>Acciones</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {productosFiltrados.map((p) => (
+                <tr key={p.id}>
+                  <td>{p.nombre}</td>
+                  <td>{p.cantidad}</td>
+                  <td>{p.categoria === 'bebidas' ? 'Bebidas' : p.categoria === 'destilados' ? 'Destilados' : p.categoria === 'postre' ? 'Postre' : '-'}</td>
+                  <td>
+                    <button onClick={() => handleEdit(p)}>Editar</button>
+                    <button onClick={() => handleDelete(p.id)} className="delete-btn">Eliminar</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
-      {productosFiltrados.length === 0 && <p className="no-data">No hay productos</p>}
+      {!cargando && productosFiltrados.length === 0 && <p className="no-data">No hay productos</p>}
     </div>
   );
 }
