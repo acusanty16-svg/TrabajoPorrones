@@ -1,9 +1,11 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import axios from 'axios'
 import './Body.css'
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
 
 const PASSWORD = '1010'
+const API_URL = 'https://portalporrones-backend-production.up.railway.app/api/productos'
 
 const TURNOS = ['Abrir', '1er Partido', '2do Partido', '3er Partido', 'Cerrar']
 
@@ -41,6 +43,8 @@ function Body() {
   const [autenticado, setAutenticado] = useState(false)
   const [passwordInput, setPasswordInput] = useState('')
   const [error, setError] = useState('')
+  const [sincronizando, setSincronizando] = useState(false)
+  const [ultimaSync, setUltimaSync] = useState(null)
 
   const [trabajadores, setTrabajadores] = useState(() => {
     try {
@@ -49,6 +53,42 @@ function Body() {
     } catch {}
     return TRABAJADORES_POR_DEFECTO
   })
+
+  useEffect(() => {
+    cargarDesdeAPI()
+  }, [])
+
+  async function cargarDesdeAPI() {
+    try {
+      const res = await axios.get(API_URL)
+      const horario = res.data.find(p => p.categoria === 'horarios')
+      if (horario) {
+        const datos = JSON.parse(horario.nombre)
+        setTrabajadores(datos)
+        localStorage.setItem('portalPorronesHorarios', JSON.stringify(datos))
+        setUltimaSync(new Date())
+      }
+    } catch {}
+  }
+
+  async function guardarEnAPI(datos) {
+    setSincronizando(true)
+    try {
+      const res = await axios.get(API_URL)
+      const existente = res.data.find(p => p.categoria === 'horarios')
+      const payload = { nombre: JSON.stringify(datos), cantidad: Date.now(), categoria: 'horarios' }
+      if (existente) {
+        await axios.put(`${API_URL}/${existente.id}`, payload)
+      } else {
+        await axios.post(API_URL, payload)
+      }
+      setUltimaSync(new Date())
+    } catch (err) {
+      console.error('Error al sincronizar horarios:', err)
+    } finally {
+      setSincronizando(false)
+    }
+  }
 
   function handleLogin(e) {
     e.preventDefault()
@@ -68,6 +108,7 @@ function Body() {
   function guardar(nuevos) {
     setTrabajadores(nuevos)
     localStorage.setItem('portalPorronesHorarios', JSON.stringify(nuevos))
+    guardarEnAPI(nuevos)
   }
 
   function cambiarTurno(idx, dia, valor) {
@@ -164,6 +205,14 @@ function Body() {
     <main className="body">
       <div className="body-content" id="horarios">
         <h2>Horarios de Trabajadores</h2>
+
+        <div className="sync-status">
+          {sincronizando ? (
+            <span className="sync-syncing">Sincronizando...</span>
+          ) : ultimaSync ? (
+            <span className="sync-ok">Sincronizado</span>
+          ) : null}
+        </div>
 
         {autenticado && (
           <div className="schedule-actions">

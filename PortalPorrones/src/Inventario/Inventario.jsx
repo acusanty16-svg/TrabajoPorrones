@@ -258,6 +258,7 @@ function Inventario() {
   };
 
   const productosFiltrados = productos.filter(p => {
+    if (p.categoria === 'horarios') return false;
     const coincideBusqueda = p.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
       (p.categoria && p.categoria.toLowerCase().includes(busqueda.toLowerCase()));
     const coincideCategoria = !filtroCategoria || p.categoria === filtroCategoria;
