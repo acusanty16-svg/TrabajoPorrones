@@ -58,30 +58,54 @@ function Body() {
     cargarDesdeAPI()
   }, [])
 
+  function encodeTrabajadores(lista) {
+    return lista.map(t =>
+      `${t.nombre}|${t.lunes}|${t.martes}|${t.jueves}|${t.viernes}|${t.sabadoDomingo}`
+    )
+  }
+
+  function decodeTrabajadores(entries) {
+    return entries.map(entry => {
+      const parts = entry.split('|')
+      return {
+        nombre: parts[0],
+        lunes: parts[1],
+        martes: parts[2],
+        jueves: parts[3],
+        viernes: parts[4],
+        sabadoDomingo: parts[5],
+      }
+    })
+  }
+
   async function cargarDesdeAPI() {
     try {
       const res = await axios.get(API_URL)
-      const horario = res.data.find(p => p.categoria === 'horarios')
-      if (horario) {
-        const datos = JSON.parse(horario.nombre)
+      const horarios = res.data.filter(p => p.categoria === 'horarios')
+      if (horarios.length > 0) {
+        const datos = decodeTrabajadores(horarios.map(h => h.nombre))
         setTrabajadores(datos)
         localStorage.setItem('portalPorronesHorarios', JSON.stringify(datos))
         setUltimaSync(new Date())
       }
-    } catch {}
+    } catch (err) {
+      console.error('Error al cargar horarios remotos:', err)
+    }
   }
 
   async function guardarEnAPI(datos) {
     setSincronizando(true)
     try {
       const res = await axios.get(API_URL)
-      const existente = res.data.find(p => p.categoria === 'horarios')
-      const payload = { nombre: JSON.stringify(datos), cantidad: Date.now(), categoria: 'horarios' }
-      if (existente) {
-        await axios.put(`${API_URL}/${existente.id}`, payload)
-      } else {
-        await axios.post(API_URL, payload)
-      }
+      const existentes = res.data.filter(p => p.categoria === 'horarios')
+
+      await Promise.all(existentes.map(e => axios.delete(`${API_URL}/${e.id}`)))
+
+      const encoded = encodeTrabajadores(datos)
+      await Promise.all(encoded.map(nombre =>
+        axios.post(API_URL, { nombre, cantidad: 0, categoria: 'horarios' })
+      ))
+
       setUltimaSync(new Date())
     } catch (err) {
       console.error('Error al sincronizar horarios:', err)
