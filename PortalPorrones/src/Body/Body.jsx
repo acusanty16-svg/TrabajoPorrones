@@ -20,11 +20,11 @@ const TURNOS_COLORES = {
 const DIAS = ['lunes', 'martes', 'jueves', 'viernes', 'sabadoDomingo']
 
 const TRABAJADORES_POR_DEFECTO = [
-  { nombre: 'Santiago', lunes: 'Abrir', martes: 'Abrir', jueves: 'Abrir', viernes: 'Abrir', sabadoDomingo: 'Abrir' },
-  { nombre: 'Marvel', lunes: '1er Partido', martes: '3er Partido', jueves: '1er Partido', viernes: '1er Partido', sabadoDomingo: '1er Partido' },
-  { nombre: 'Zulay', lunes: '2do Partido', martes: '3er Partido', jueves: '2do Partido', viernes: '2do Partido', sabadoDomingo: '2do Partido' },
-  { nombre: 'Luis', lunes: '1er Partido', martes: '3er Partido', jueves: '1er Partido', viernes: '1er Partido', sabadoDomingo: '2do Partido' },
-  { nombre: 'Alejo', lunes: 'Cerrar', martes: 'Cerrar', jueves: 'Cerrar', viernes: 'Cerrar', sabadoDomingo: 'Cerrar' },
+  { nombre: 'Santiago', lunes: '1er Partido', martes: '2do Partido', jueves: 'Abrir', viernes: '2do Partido', sabadoDomingo: 'Abrir' },
+  { nombre: 'Marvel', lunes: 'Cerrar', martes: '3er Partido', jueves: '2do Partido', viernes: '1er Partido', sabadoDomingo: 'Abrir' },
+  { nombre: 'Zulay', lunes: 'Abrir', martes: '2do Partido', jueves: '2do Partido', viernes: 'Cerrar', sabadoDomingo: 'Abrir' },
+  { nombre: 'Luis', lunes: '2do Partido', martes: '2do Partido', jueves: '1er Partido', viernes: 'Abrir', sabadoDomingo: 'Abrir' },
+  { nombre: 'Alejo', lunes: '2do Partido', martes: '3er Partido', jueves: 'Cerrar', viernes: '2do Partido', sabadoDomingo: 'Abrir' },
   { nombre: 'Vacante', lunes: 'Cerrar', martes: 'Cerrar', jueves: 'Cerrar', viernes: 'Cerrar', sabadoDomingo: 'Cerrar' },
 ]
 
@@ -55,7 +55,11 @@ function Body() {
   })
 
   useEffect(() => {
-    cargarDesdeAPI()
+    cargarDesdeAPI().then(hayRemoto => {
+      if (!hayRemoto) {
+        guardarEnAPI(TRABAJADORES_POR_DEFECTO)
+      }
+    })
   }, [])
 
   function encodeTrabajadores(lista) {
@@ -87,10 +91,12 @@ function Body() {
         setTrabajadores(datos)
         localStorage.setItem('portalPorronesHorarios', JSON.stringify(datos))
         setUltimaSync(new Date())
+        return true
       }
     } catch (err) {
       console.error('Error al cargar horarios remotos:', err)
     }
+    return false
   }
 
   async function guardarEnAPI(datos) {
@@ -103,7 +109,7 @@ function Body() {
 
       const encoded = encodeTrabajadores(datos)
       await Promise.all(encoded.map(nombre =>
-        axios.post(API_URL, { nombre, cantidad: 0, categoria: 'horarios' })
+        axios.post(API_URL, { nombre, cantidad: 1, categoria: 'horarios' })
       ))
 
       setUltimaSync(new Date())
