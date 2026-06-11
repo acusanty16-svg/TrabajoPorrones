@@ -18,15 +18,38 @@
 .sync-status {
   text-align: center;
   margin-bottom: 0.75rem;
-  font-size: 0.8rem;
+  font-size: 0.85rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .sync-syncing {
   color: var(--warning);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+}
+
+.sync-spinner {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--warning);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: syncSpin 0.6s linear infinite;
+}
+
+@keyframes syncSpin {
+  to { transform: rotate(360deg); }
 }
 
 .sync-ok {
   color: var(--accent-secondary);
+  font-weight: 500;
 }
 
 /* ----- Login ----- */
@@ -232,9 +255,38 @@
   border-radius: 4px;
 }
 
+.pdf-download-group {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.worker-select {
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.85rem;
+  outline: none;
+  cursor: pointer;
+  min-width: 200px;
+  transition: border-color 0.2s;
+}
+
+.worker-select:focus {
+  border-color: var(--accent);
+}
+
+.worker-select option {
+  background: var(--surface);
+  color: var(--text);
+}
+
 .pdf-button {
-  display: block;
-  margin: 1rem auto 0;
   padding: 0.6rem 1.5rem;
   background: var(--accent);
   color: #fff;
@@ -262,6 +314,26 @@
     margin-bottom: 1rem;
   }
 
+  .schedule-login {
+    flex-direction: column;
+  }
+
+  .schedule-login .password-input {
+    width: 100%;
+  }
+
+  .schedule-login .action-btn {
+    width: 100%;
+  }
+
+  .schedule-actions {
+    flex-direction: column;
+  }
+
+  .schedule-actions .action-btn {
+    width: 100%;
+  }
+
   .schedule-table table,
   .schedule-table thead,
   .schedule-table tbody,
@@ -287,10 +359,10 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.4rem 0;
+    padding: 0.5rem 0;
     font-size: 0.85rem;
-    border-bottom: none;
     border-bottom: 1px solid var(--border);
+    min-height: 2.5rem;
   }
 
   .schedule-table td:last-child {
@@ -322,19 +394,52 @@
 
   .nombre-input {
     text-align: right;
+    font-size: 0.85rem;
   }
 
   .turno-select {
     text-align: right;
     width: auto;
+    font-size: 0.85rem;
+  }
+
+  .delete-btn {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  .color-legend-container {
+    padding: 1rem;
   }
 
   .color-legend {
-    gap: 0.75rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+    justify-items: start;
   }
 
   .legend-item {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
+  }
+
+  .legend-color {
+    width: 12px;
+    height: 12px;
+  }
+
+  .pdf-download-group {
+    flex-direction: column;
+  }
+
+  .worker-select {
+    width: 100%;
+    min-width: unset;
+  }
+
+  .pdf-button {
+    width: 100%;
+    padding: 0.75rem 1.5rem;
   }
 }
 
